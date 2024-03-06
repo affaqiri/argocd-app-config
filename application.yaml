@@ -1,0 +1,24 @@
+# argo cd configuration
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp-argo-application
+  namespace: argocd
+spec:
+  project: default
+  
+  source:
+    repoURL: https://github.com/affaqiri/argocd-app-config.git
+    targetRevision: HEAD
+    path: dev
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: myapp # all our application resources will be created inside this namespace
+  
+  syncPolicy:
+    syncOptions:
+    - CreateNamespace=true # will automatically create the above myapp namespace
+    automated:
+      selfHeal: true # will override any manual changes on the cluster to target git repo config
+      prune: true # will delete all k8s resources of the app when we delete the configs in git repo
